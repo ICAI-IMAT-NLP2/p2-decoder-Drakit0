@@ -287,7 +287,11 @@ class TransformerDecoder(nn.Module):
         # Implement the forward pass for the Transformer decoder
         x = self.embeddings(input_ids)
         
-        mask = torch.tril(torch.ones(input_ids.shape[-1], input_ids.shape[-1])).unsqueeze(0)
+        inverted_mask = torch.tril(torch.ones((x.shape[-2], x.shape[-2])))
+        mask = inverted_mask*-1 + torch.ones((x.shape[-2], x.shape[-2]))
+        
+        # Solución clever
+        # mask = torch.tril(torch.ones(input_ids.shape[-1], input_ids.shape[-1])).unsqueeze(0)
         
         for attention_layer in self.layers:
             x = attention_layer(x, mask)
